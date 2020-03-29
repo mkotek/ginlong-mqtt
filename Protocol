@@ -1,24 +1,60 @@
-SolarMAN-1
+Solis Mini 4G
+Firmware version (main): 0018
+Firmware version (slave): 001B
+Inverter model: 00E0
+Firmware version (logger): MW_08_0501_1.58
 
-270 byte data packet:
+------------------------------------------------------------------------
+
+28 byte data packet:
 
 Position     Type     Modifier    Data
-70-101       Ascii                Serial Number
-102-104      Hex      /10         Temperature
-108-111      Hex      /10         DC1 Input Voltage
-112-115      Hex      /10         DC1 Input Current
-120-123      Hex      /10         AC Current 
-140-143      Hex      /10         AC Power (not 100% on this one)
-144-147      Hex      /10         AC Voltage
-148-151      Hex      /100        AC Frequency
-156-159      Hex      /100        kWh today
-164-167      Hex      /10         kWh total
+14-21        Ascii                Data logger serial number
 
+------------------------------------------------------------------------
 
-SolarMAN-Ethernet
+120 byte data packet:
 
+Position     Type     Modifier    Data
+14-21        Ascii                Data logger serial number
+52-111       Ascii                Wifi access point name
 
+------------------------------------------------------------------------
 
-SolarMAN-Customer
+198 byte data packet:
 
+Position     Type     Modifier    Data
+14-21        Ascii                Data logger serial number
+60-89        Ascii                Data logger firmware version
+140-151      Hex                  Data logger MAC address
+------------------------------------------------------------------------
 
+492 byte data packet:
+
+Position     Type     Modifier    Data
+14-21        Ascii                Data logger serial number
+64-93        Ascii                Inverter serial number
+
+96-97        Hex      /10         Temperature
+98-101       Hex      /10         Ppv1
+102-105      Hex      /10         Vpv1
+106-109      Hex      /10         Ipv1
+110-113      Hex      /10         Ppv2
+114-117      Hex      /10         Vpv2
+118-121      Hex      /10         Ipv2
+122-125      Hex      /10         Iac1
+126-129      Hex      /10         Iac2
+130-133      Hex      /10         Iac3
+134-137      Unknown
+138-141      Hex      /10         Vac
+142-145      Hex      /100        Fac
+146-149      unknown
+150-153      Hex      /100        kWh today
+154-157      unknown
+158-161      Hex      /10         kWh total
+
+316-319      Hex                  Inverter model
+320-323      Hex                  Inverter firmware version (main)
+324-327      Hex                  Inverter firmware version (slave)
+
+------------------------------------------------------------------------
