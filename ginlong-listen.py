@@ -25,6 +25,7 @@ import binascii
 import time
 import sys
 import string
+import struct
 import configparser
 import io
 
@@ -58,6 +59,10 @@ def swaphex(hexdata):
     hexarray.byteswap()
     return hexarray.tobytes()[::-1]
 
+def genhextime():
+    secondsSinceEpoch = time.time()
+    return binascii.hexlify(struct.pack('<I', round(secondsSinceEpoch)))
+
 ############################
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -89,7 +94,10 @@ while True:
                     print("Data logger serial %s" % dlserial)
 
                 #### FIXME
-                rawdata = binascii.unhexlify('a50a001017e66b' + str(hexdata[14:22], encoding) + '000164bc805e780000002c15')
+                response = 'a50a001017e66b' + str(hexdata[14:22], encoding) + '0001' + str(genhextime(), encoding) + '780000002c15'
+                if DEBUG:
+                    print('Response: %s' % response)
+                rawdata = binascii.unhexlify(response)
                 conn.sendall(rawdata)
                 continue
 
@@ -106,7 +114,10 @@ while True:
                     print("Access point: %s" % serial)
 
                 #### FIXME
-                rawdata = binascii.unhexlify('a50a0010130908' + str(hexdata[14:22], encoding) + '81019ec8805e78000000af15')
+                response = 'a50a0010130908' + str(hexdata[14:22], encoding) + '8101' + str(genhextime(), encoding) + '78000000af15'
+                if DEBUG:
+                    print('Response: %s' % response)
+                rawdata = binascii.unhexlify(response)
                 conn.sendall(rawdata)
                 continue
 
@@ -118,7 +129,11 @@ while True:
                     print("Data logger serial %s" % dlserial)
 
                 #### FIXME
-                rawdata = binascii.unhexlify('a50a0010110201' + str(hexdata[14:22], encoding) + '020195c8805e780000001715')
+                response = 'a50a0010110201' + str(hexdata[14:22], encoding) + '0201' + str(genhextime(), encoding) + '780000001715'
+                if DEBUG:
+                    print('Response: %s' % response)
+                rawdata = binascii.unhexlify(response)
+                
                 conn.sendall(rawdata)
                 continue
 
