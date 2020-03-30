@@ -60,7 +60,7 @@ def swaphex(hexdata):
     return hexarray.tobytes()[::-1]
 
 def genhextime():
-	# 5E8217A5 = Decimal 1585584037 = Monday, 30. March 2020 16:00:37
+    # 5E8217A5 = Decimal 1585584037 = Monday, 30. March 2020 16:00:37
     secondsSinceEpoch = time.time()
     return binascii.hexlify(struct.pack('<I', round(secondsSinceEpoch)))
 
@@ -259,10 +259,11 @@ while True:
                     print('Fac: ', fac)
                 msgs.append((mqtt_topic + "Fac", fac, 0, False))
 
-                ##### Unknown
-                unk = float(int(hexdata[146:150],16))
+                ##### Pac
+                pac = float(int(hexdata[146:150],16))
                 if DEBUG:
-                    print('Unknown: ', unk)
+                    print('Pac: ', pac)
+                msgs.append((mqtt_topic + "Pac", pac, 0, False))
 
                 ##### kWh today
                 kwhtoday = float(int(hexdata[150:154],16))/100
