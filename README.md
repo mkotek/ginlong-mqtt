@@ -1,8 +1,10 @@
 # Overview
- 
-This is a daemon that will listen on a port for connections from a Ginlong Solar Inverter. Currently tested with a Solis 4G Mini Single Phase Inverter (Solis-mini-1500-4G)
+This is a daemon that will listen on a port for connections from a Ginlong Solar Inverter.
+Currently tested with a Solis 4G Mini Single Phase Inverter (Solis-mini-700-4G) running on firmware MW_08_0501_1.58.
 
-Many thanks go to Graham0 and his script for an older version. https://github.com/graham0/ginlong-wifi
+# Thanks
+graham0 for the inital script: https://github.com/graham0/ginlong-wifi
+dpoulson for the work on ginlong protocol: https://github.com/dpoulson/ginlong-mqtt
 
 # Details
 The Solis solar inverters come with the option for wired or wireless monitoring 'sticks'. These are designed to talk to their own portal at http://www.ginlongmonitoring.com/ where
@@ -22,7 +24,7 @@ You will also need a running MQTT server.
 
 # Setup
 
-1. Log into the monitoring device, and configure the second IP option to point to the server that this daemon is running on. (Daemon defaults to port 9999)
+1. Log into the monitoring device, and configure the second IP option to point to the server that this daemon is running on. (Daemon defaults to port 10000)
 2. Make sure that the MQTT settings are correct in the daemon.
 3. Start the daemon
 4. Add the following to your OpenHAB items (Replace XXXXXXXXXX with the serial number of your inverter)
@@ -45,5 +47,8 @@ Number Solis_kWhTotal "kWh total [%.2f kWh]" (Solis) { mqtt="<[mymosquitto:ginlo
 5. These items should now be accessible in your rules. If you have influxdb and grafana set up, you should also be able to start producing graphs
 
 
+# Alternative setup
 
+1. Set a static DNS entry in your router and point data1.solarmanpv.com and data2.solarmanpv.com to the server hosting this script.
+2. Make sure to use port 10000 since this is the default port used by ginlong portal
 
