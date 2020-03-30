@@ -9,29 +9,37 @@ Firmware version (logger): MW_08_0501_1.58
 28 byte data packet:
 
 Position     Type     Modifier    Data
+0-1          Hex                  headCode hex(a5)
 14-21        Ascii                Data logger serial number
-
+24-25        Hex                  checksum of all bytes except headCode, checksum and endCode
+26-27        Hex                  endCode hex(15)
 ------------------------------------------------------------------------
 
 120 byte data packet:
 
 Position     Type     Modifier    Data
+0-1          Hex                  headCode hex(a5)
 14-21        Ascii                Data logger serial number
 52-111       Ascii                Wifi access point name
-
+116-117      Hex                  checksum of all bytes except headCode, checksum and endCode
+118-119      Hex                  endCode hex(15)
 ------------------------------------------------------------------------
 
 198 byte data packet:
 
 Position     Type     Modifier    Data
+0-1          Hex                  headCode hex(a5)
 14-21        Ascii                Data logger serial number
 60-89        Ascii                Data logger firmware version
 140-151      Hex                  Data logger MAC address
+194-195      Hex                  checksum of all bytes except headCode, checksum and endCode
+196-197      Hex                  endCode hex(15)
 ------------------------------------------------------------------------
 
 492 byte data packet:
 
 Position     Type     Modifier    Data
+0-1          Hex                  headCode hex(a5)
 14-21        Ascii                Data logger serial number
 64-93        Ascii                Inverter serial number
 
@@ -48,13 +56,17 @@ Position     Type     Modifier    Data
 134-137      Unknown
 138-141      Hex      /10         Vac
 142-145      Hex      /100        Fac
-146-149      unknown
+146-149      unknown			  Might be AC Power output
 150-153      Hex      /100        kWh today
 154-157      unknown
 158-161      Hex      /10         kWh total
+
+176-177      ???                  Operation mode
 
 316-319      Hex                  Inverter model
 320-323      Hex                  Inverter firmware version (main)
 324-327      Hex                  Inverter firmware version (slave)
 
+488-489      Hex                  checksum of all bytes except headCode, checksum and endCode
+490-491      Hex                  endCode hex(15)
 ------------------------------------------------------------------------

@@ -60,8 +60,35 @@ def swaphex(hexdata):
     return hexarray.tobytes()[::-1]
 
 def genhextime():
+	# 5E8217A5 = Decimal 1585584037 = Monday, 30. March 2020 16:00:37
     secondsSinceEpoch = time.time()
     return binascii.hexlify(struct.pack('<I', round(secondsSinceEpoch)))
+
+def createV5Response(dlserial, responsetype):
+    headCode = binascii.unhexlify('a5') # headCode for V5 response
+    unk1 = binascii.unhexlify('0a')
+    unk2 = binascii.unhexlify('0010')
+    if (responsetype == '0001'):
+        unk3 = binascii.unhexlify('17e66b')
+    elif (responsetype == '0101'):
+        unk3 = binascii.unhexlify('120302')
+    elif (responsetype == '0201'):
+        unk3 = binascii.unhexlify('110201')
+    serial = binascii.unhexlify(dlserial)
+    command = binascii.unhexlify(responsetype)
+    hextime = binascii.unhexlify(genhextime())
+    unk5 = binascii.unhexlify('78000000')
+    # chksum
+    endCode = binascii.unhexlify('15')
+
+    chksrc = bytearray(headCode + unk1 + unk2 + unk3 + serial + command + hextime + unk5)
+    chksum = 0
+    chksrc_bytes = bytearray(chksrc)
+    for i in range(1, len(chksrc_bytes) - 2, 1):
+        chksum += chksrc_bytes[i] & 255
+    chksum = int((chksum & 255))
+    
+    return binascii.hexlify(headCode + unk1 + unk2 + unk3 + serial + command + hextime + unk5 + chksum.to_bytes(1, 'big') + endCode)
 
 ############################
 
@@ -93,8 +120,7 @@ while True:
                 if DEBUG:
                     print("Data logger serial %s" % dlserial)
 
-                #### FIXME
-                response = 'a50a001017e66b' + str(hexdata[14:22], encoding) + '0001' + str(genhextime(), encoding) + '780000002c15'
+                response = createV5Response(str(hexdata[14:22], encoding), '0001')
                 if DEBUG:
                     print('Response: %s' % response)
                 rawdata = binascii.unhexlify(response)
@@ -113,8 +139,7 @@ while True:
                 if DEBUG:
                     print("Access point: %s" % serial)
 
-                #### FIXME
-                response = 'a50a0010130908' + str(hexdata[14:22], encoding) + '8101' + str(genhextime(), encoding) + '78000000af15'
+                response = createV5Response(str(hexdata[14:22], encoding), '0101')
                 if DEBUG:
                     print('Response: %s' % response)
                 rawdata = binascii.unhexlify(response)
@@ -128,12 +153,10 @@ while True:
                 if DEBUG:
                     print("Data logger serial %s" % dlserial)
 
-                #### FIXME
-                response = 'a50a0010110201' + str(hexdata[14:22], encoding) + '0201' + str(genhextime(), encoding) + '780000001715'
+                response = createV5Response(str(hexdata[14:22], encoding), '0201')
                 if DEBUG:
                     print('Response: %s' % response)
                 rawdata = binascii.unhexlify(response)
-                
                 conn.sendall(rawdata)
                 continue
 
