@@ -74,6 +74,8 @@ def createV5Response(dlserial, responsetype):
         unk3 = binascii.unhexlify('120302')
     elif (responsetype == '0201'):
         unk3 = binascii.unhexlify('110201')
+    elif (responsetype == '8101'):
+        unk3 = binascii.unhexlify('130908')
     serial = binascii.unhexlify(dlserial)
     command = binascii.unhexlify(responsetype)
     hextime = binascii.unhexlify(genhextime())
@@ -120,6 +122,7 @@ while True:
                 if DEBUG:
                     print("Data logger serial %s" % dlserial)
 
+                # Send response
                 response = createV5Response(str(hexdata[14:22], encoding), '0001')
                 if DEBUG:
                     print('Response: %s' % response)
@@ -135,24 +138,34 @@ while True:
                     print("Data logger serial %s" % dlserial)
 
                 ##### Access point
-                serial = str(binascii.unhexlify(str(hexdata[52:112], encoding)), encoding)
+                ap = str(binascii.unhexlify(str(hexdata[52:112], encoding)), encoding)
                 if DEBUG:
-                    print("Access point: %s" % serial)
+                    print("Access point: %s" % ap)
 
-                response = createV5Response(str(hexdata[14:22], encoding), '0101')
+                # Send response
+                response = createV5Response(str(hexdata[14:22], encoding), '8101')
                 if DEBUG:
                     print('Response: %s' % response)
                 rawdata = binascii.unhexlify(response)
                 conn.sendall(rawdata)
                 continue
 
-            # Data logger inverter  message
+            # Data logger core data message
             elif (len(hexdata) == 198):
-                print('Got inverter core data message')
+                print('Got data logger core data message')
                 dlserial = int(swaphex(hexdata[14:22]), 16)
                 if DEBUG:
                     print("Data logger serial %s" % dlserial)
 
+                dlfirmware = str(binascii.unhexlify(str(hexdata[60:90], encoding)), encoding)
+                if DEBUG:
+                    print("Data logger firmware: %s" % dlfirmware)
+
+                dlmac = str(hexdata[140:152], encoding)
+                if DEBUG:
+                    print("Data logger MAC: %s" % dlmac)
+
+                # Send response
                 response = createV5Response(str(hexdata[14:22], encoding), '0201')
                 if DEBUG:
                     print('Response: %s' % response)
@@ -160,7 +173,7 @@ while True:
                 conn.sendall(rawdata)
                 continue
 
-            # Inverter data from data logger
+            # Inverter payload from data logger
             elif (len(hexdata) == 492):
                 print('Got inverter payload message')
                 timestamp = (time.strftime("%F %H:%M"))     # get date time
@@ -303,6 +316,14 @@ while True:
                     file = open("rawlog",'a')
                     file.write(timestamp + ' ' + hexdata + '\n')
                     file.close()
+ 
+                # Send response
+                response = createV5Response(str(hexdata[14:22], encoding), '0101')
+                if DEBUG:
+                    print('Response: %s' % response)
+                rawdata = binascii.unhexlify(response)
+                conn.sendall(rawdata)
+ 
             else:
                 print('hexdata has invalid length')
 
