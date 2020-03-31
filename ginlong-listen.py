@@ -104,11 +104,13 @@ while True:
     # Wait for a connection
     if DEBUG:
         print('waiting for a connection')
+    sock.settimeout(None)
     conn,addr = sock.accept()
     try:
         if DEBUG:
             print('connection from', addr)
 
+            sock.settimeout(20.0)
             rawdata = conn.recv(1024)                                 # Read in a chunk of data
             hexdata = binascii.hexlify(rawdata)                       # Convert to hex for easier processing
             if DEBUG:
@@ -120,7 +122,7 @@ while True:
                 print('Got data logger serial message')
                 dlserial = int(swaphex(hexdata[14:22]), 16)
                 if DEBUG:
-                    print("Data logger serial %s" % dlserial)
+                    print("Data logger serial: %s" % dlserial)
 
                 # Send response
                 response = createV5Response(str(hexdata[14:22], encoding), '0001')
@@ -135,7 +137,7 @@ while True:
                 print('Got data logger access point message')
                 dlserial = int(swaphex(hexdata[14:22]), 16)
                 if DEBUG:
-                    print("Data logger serial %s" % dlserial)
+                    print("Data logger serial: %s" % dlserial)
 
                 ##### Access point
                 ap = str(binascii.unhexlify(str(hexdata[52:112], encoding)), encoding)
@@ -182,12 +184,12 @@ while True:
                 ##### Data logger serial
                 dlserial = int(swaphex(hexdata[14:22]), 16)
                 if DEBUG:
-                    print("Data logger serial %s" % dlserial)
+                    print("Data logger serial: %s" % dlserial)
 
                 ##### Inverter serial
                 serial = str(binascii.unhexlify(str(hexdata[64:94], encoding)), encoding)
                 if DEBUG:
-                    print("Inverter serial %s" % serial)
+                    print("Inverter serial: %s" % serial)
 
                 ##### MQTT topic
                 mqtt_topic = ''.join([client_id, "/", serial, "/"])   # Create the topic base using the client_id and serial number
@@ -327,6 +329,8 @@ while True:
             else:
                 print('hexdata has invalid length')
 
+    except:
+        print("Oops!", sys.exc_info()[0], "occured.")
     finally:
         if DEBUG:
             print("Finally")
