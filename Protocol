@@ -43,8 +43,10 @@ Position     Type     Modifier    Data
 14-21        Ascii                Data logger serial number
 64-93        Ascii                Inverter serial number
 
+94-95        Unknown                  
+
 96-97        Hex      /10         Temperature
-98-101       Hex      /10         Ppv1
+98-101       Hex      /divider    Ppv1 ( divider depends on Base)
 102-105      Hex      /10         Vpv1
 106-109      Hex      /10         Ipv1
 110-113      Hex      /10         Ppv2
@@ -53,12 +55,12 @@ Position     Type     Modifier    Data
 122-125      Hex      /10         Iac1
 126-129      Hex      /10         Iac2
 130-133      Hex      /10         Iac3
-134-137      Unknown
+134-137      Hex      /1          Pac ( + Base )
 138-141      Hex      /10         Vac
 142-145      Hex      /100        Fac
-146-149      Hex      /1          Pac
+146-149      Hex      /1          Base
 150-153      Hex      /100        kWh today
-154-157      unknown
+154-157      Unknown
 158-161      Hex      /10         kWh total
 
 176-177      ???                  Operation mode

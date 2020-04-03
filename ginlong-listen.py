@@ -76,6 +76,8 @@ def createV5Response(dlserial, responsetype):
         unk3 = binascii.unhexlify('110201')
     elif (responsetype == '8101'):
         unk3 = binascii.unhexlify('130908')
+    else:
+        unk3 = binascii.unhexlify('000000')
     serial = binascii.unhexlify(dlserial)
     command = binascii.unhexlify(responsetype)
     hextime = binascii.unhexlify(genhextime())
@@ -98,6 +100,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 sock.bind((listen_address, listen_port))
 sock.listen(1)
+#sock.setblocking(0)
 print('listening on %s:%s' % (listen_address, listen_port))
 
 while True: 
@@ -106,11 +109,11 @@ while True:
         print('waiting for a connection')
     sock.settimeout(None)
     conn,addr = sock.accept()
+    conn.settimeout(60.0)
+
     try:
         if DEBUG:
             print('connection from', addr)
-
-            sock.settimeout(20.0)
             rawdata = conn.recv(1024)                                 # Read in a chunk of data
             hexdata = binascii.hexlify(rawdata)                       # Convert to hex for easier processing
             if DEBUG:
@@ -196,106 +199,165 @@ while True:
                 if DEBUG:
                     print('MQTT Topic:', mqtt_topic)
 
-                ##### Temperature
-                temp = float(int(hexdata[96:98],16))/10
+                ##### Base
+                base = float(int(hexdata[146:150],16))
                 if DEBUG:
-                    print('Temp: ', temp)
+                    print('Base:', base)
+
+                if base == 0.0:
+                    divider = 10
+                else:
+                    divider = 1
+
+                ##### Unknown
+                unk = float(int(hexdata[94:96],16)) / 10
+                if DEBUG:
+                    print('Unknown 94-95:', unk)
+
+                ##### Temperature
+                temp = float(int(hexdata[96:98],16)) / 10
+                if DEBUG:
+                    print('Temp:', temp)
                 msgs.append((mqtt_topic + "Temp", temp, 0, False))
 
                 ##### Ppv1
-                ppv1 = float(int(hexdata[98:102],16))
+                ppv1 = float(int(hexdata[98:102],16)) / divider
                 if DEBUG:
-                    print('Ppv1: ', ppv1)
+                    print('Ppv1:', ppv1)
                 msgs.append((mqtt_topic + "Ppv1", ppv1, 0, False))
 
                 ##### Vpv1
-                vpv1 = float(int(hexdata[102:106],16))/10
+                vpv1 = float(int(hexdata[102:106],16)) / 10
                 if DEBUG:
-                    print('Vpv1: ', vpv1)
+                    print('Vpv1:', vpv1)
                 msgs.append((mqtt_topic + "Vpv1", vpv1, 0, False))
 
                 ##### Ipv1
-                ipv1 = float(int(hexdata[106:110],16))/10
+                ipv1 = float(int(hexdata[106:110],16)) / 10
                 if DEBUG:
-                    print('Ipv1: ', ipv1)
+                    print('Ipv1:', ipv1)
                 msgs.append((mqtt_topic + "Ipv1", ipv1, 0, False))
 
                 ##### Ppv2
-                ppv2 = float(int(hexdata[110:114],16))
+                ppv2 = float(int(hexdata[110:114],16)) / divider
                 if DEBUG:
-                    print('Ppv2: ', ppv2)
+                    print('Ppv2:', ppv2)
                 msgs.append((mqtt_topic + "Ppv2", ppv2, 0, False))
 
                 ##### Vpv2
-                vpv2 = float(int(hexdata[114:118],16))/10
+                vpv2 = float(int(hexdata[114:118],16)) / 10
                 if DEBUG:
-                    print('Vpv2: ', vpv2)
+                    print('Vpv2:', vpv2)
                 msgs.append((mqtt_topic + "Vpv2", vpv2, 0, False))
                 
                 ##### Ipv2
-                ipv2 = float(int(hexdata[118:122],16))/10
+                ipv2 = float(int(hexdata[118:122],16)) / 10
                 if DEBUG:
-                    print('Ipv2: ', ipv2)
+                    print('Ipv2:', ipv2)
                 msgs.append((mqtt_topic + "Ipv2", ipv2, 0, False))
 
                 ##### Iac1
-                iac1 = float(int(hexdata[122:126],16))/10
+                iac1 = float(int(hexdata[122:126],16)) / 10
                 if DEBUG:
-                    print('Iac1: ', iac1)
+                    print('Iac1:', iac1)
                 msgs.append((mqtt_topic + "Iac1", iac1, 0, False))
 
                 ##### Iac2
-                iac2 = float(int(hexdata[126:130],16))
+                iac2 = float(int(hexdata[126:130],16)) / 10
                 if DEBUG:
-                    print('Iac2: ', iac2)
+                    print('Iac2:', iac2)
                 msgs.append((mqtt_topic + "Iac2", iac2, 0, False))
 
                 ##### Iac3
-                iac3 = float(int(hexdata[130:134],16))
+                iac3 = float(int(hexdata[130:134],16)) / 10
                 if DEBUG:
-                    print('Iac2: ', iac3)
+                    print('Iac2:', iac3)
                 msgs.append((mqtt_topic + "Iac3", iac3, 0, False))
 
-                ##### Unknown
-                unk = float(int(hexdata[134:138],16))
+                ##### Pac
+                pac = float(int(hexdata[134:138],16)) + base
                 if DEBUG:
-                    print('Unknown: ', unk)
-                #msgs.append((mqtt_topic + "Unknown", unk, 0, False))
+                    print('Pac:', pac)
+                msgs.append((mqtt_topic + "Pac", pac, 0, False))
 
                 ##### Vac
-                vac = float(int(hexdata[138:142],16))/10
+                vac = float(int(hexdata[138:142],16)) / 10
                 if DEBUG:
-                    print('Vac: ', vac)
+                    print('Vac:', vac)
                 msgs.append((mqtt_topic + "Vac", vac, 0, False))
 
                 ##### Fac
-                fac = float(int(hexdata[142:146],16))/100
+                fac = float(int(hexdata[142:146],16)) / 100
                 if DEBUG:
-                    print('Fac: ', fac)
+                    print('Fac:', fac)
                 msgs.append((mqtt_topic + "Fac", fac, 0, False))
 
-                ##### Pac
-                pac = float(int(hexdata[146:150],16))
-                if DEBUG:
-                    print('Pac: ', pac)
-                msgs.append((mqtt_topic + "Pac", pac, 0, False))
-
                 ##### kWh today
-                kwhtoday = float(int(hexdata[150:154],16))/100
+                kwhtoday = float(int(hexdata[150:154],16)) / 100
                 if DEBUG:
-                    print('kwh today: ', kwhtoday)
+                    print('kwh today:', kwhtoday)
                 msgs.append((mqtt_topic + "kwhtoday", kwhtoday, 0, False))
 
                 ##### Unknown
                 unk = float(int(hexdata[154:158],16))
                 if DEBUG:
-                    print('Unknown: ', unk)
+                    print('Unknown:', unk)
 
                 ##### kWh total
-                kwhtotal = float(int(hexdata[158:162],16))/10
+                kwhtotal = float(int(hexdata[158:162],16)) / 10
                 if DEBUG:
-                    print('kwh total: ', kwhtotal)
+                    print('kwh total:', kwhtotal)
                 msgs.append((mqtt_topic + "kwhtotal", kwhtotal, 0, False))
+
+                ##### Unknown
+                unk = float(int(hexdata[174:178],16))
+                if DEBUG:
+                    print('Unknown:', unk)
+
+                ##### Unknown
+                unk = float(int(hexdata[216:218],16))
+                if DEBUG:
+                    print('Unknown:', unk)
+
+                ##### Unknown
+                unk = float(int(hexdata[218:220],16))
+                if DEBUG:
+                    print('Unknown:', unk)
+
+                ##### Unknown
+                unk = float(int(hexdata[220:224],16))
+                if DEBUG:
+                    print('Unknown:', unk)
+
+                ##### Unknown
+                unk = float(int(hexdata[224:226],16))
+                if DEBUG:
+                    print('Unknown:', unk)
+
+                ##### Unknown
+                unk = float(int(hexdata[226:228],16))
+                if DEBUG:
+                    print('Unknown:', unk)
+
+                ##### Unknown
+                unk = float(int(hexdata[228:230],16))
+                if DEBUG:
+                    print('Unknown:', unk)
+
+                ##### Unknown
+                unk = float(int(hexdata[230:232],16))
+                if DEBUG:
+                    print('Unknown:', unk)
+
+                ##### Unknown
+                unk = float(int(hexdata[232:234],16))
+                if DEBUG:
+                    print('Unknown:', unk)
+
+                ##### Unknown
+                unk = float(int(hexdata[234:236],16))
+                if DEBUG:
+                    print('Unknown:', unk)
 
                 ##### Inverter Model
                 inverter_model = str(swaphex(hexdata[316:320]), encoding)
@@ -329,8 +391,17 @@ while True:
             else:
                 print('hexdata has invalid length')
 
+    except socket.timeout:
+        print("Socket timeout occured!")
+        # Send response
+        response = createV5Response('4e4fa7ef', '1000')
+        if DEBUG:
+            print('Response: %s' % response)
+        rawdata = binascii.unhexlify(response)
+        conn.sendall(rawdata)
     except:
         print("Oops!", sys.exc_info()[0], "occured.")
     finally:
         if DEBUG:
             print("Finally")
+        conn.shutdown(socket.SHUT_RDWR)
