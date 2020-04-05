@@ -296,17 +296,30 @@ while True:
                 kwhtoday = float(int(hexdata[150:154],16)) / 100
                 if DEBUG:
                     print('kwh today:', kwhtoday)
-                msgs.append((mqtt_topic + "kwhtoday", kwhtoday, 0, False))
 
-                ##### Unknown
-                unk = float(int(hexdata[154:158],16))
+                ##### kWh today base
+                kwhdbase = float(int(hexdata[154:158],16)) / 10
                 if DEBUG:
-                    print('Unknown:', unk)
+                    print('kwh today base:', kwhdbase)
+
+                kwhtoday = (kwhdbase + kwhtoday)
+                if DEBUG:
+                    print('kwh today sum:', kwhtoday)
+                msgs.append((mqtt_topic + "kwhtoday", kwhtoday, 0, False))
 
                 ##### kWh total
                 kwhtotal = float(int(hexdata[158:162],16)) / 10
                 if DEBUG:
                     print('kwh total:', kwhtotal)
+
+                ##### kwh total base
+                kwhabase = float(int(hexdata[162:166],16)) / 10
+                if DEBUG:
+                    print('kwh total base:', kwhabase)
+
+                kwhtotal = (kwhabase + kwhtotal)
+                if DEBUG:
+                    print('kwh total sum:', kwhtotal)
                 msgs.append((mqtt_topic + "kwhtotal", kwhtotal, 0, False))
 
                 ##### Unknown
