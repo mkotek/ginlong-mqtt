@@ -1,6 +1,6 @@
 # Overview
 This is a daemon that will listen on a port for connections from a Ginlong Solar Inverter.
-Currently tested with a Solis 4G Mini Single Phase Inverter (Solis-mini-700-4G) running on firmware MW_08_0501_1.58.
+Currently tested with a Solis 4G Mini Single Phase Inverter (Solis-mini-700-4G) running on firmware MW_08_0501_1.58 (Solarman-Ethernet protocol v5).
 
 # Thanks
 graham0 for the inital script: https://github.com/graham0/ginlong-wifi
