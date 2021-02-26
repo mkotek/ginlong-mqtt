@@ -220,7 +220,7 @@ while True:
                     print('Temp:', temp)
                 msgs.append((mqtt_topic + "Temp", temp, 0, False))
 
-                ##### Ppv1
+                ##### Ppv1 - FIXME
                 ppv1 = float(int(hexdata[98:102],16)) / divider
                 if DEBUG:
                     print('Ppv1:', ppv1)
@@ -274,11 +274,10 @@ while True:
                     print('Iac2:', iac3)
                 msgs.append((mqtt_topic + "Iac3", iac3, 0, False))
 
-                ##### Pac
-                pac = float(int(hexdata[134:138],16)) + base
+                ##### Unknown
+                unk = float(int(hexdata[134:138],16))
                 if DEBUG:
-                    print('Pac:', pac)
-                msgs.append((mqtt_topic + "Pac", pac, 0, False))
+                    print('Unknown:', unk)
 
                 ##### Vac
                 vac = float(int(hexdata[138:142],16)) / 10
@@ -292,13 +291,15 @@ while True:
                     print('Fac:', fac)
                 msgs.append((mqtt_topic + "Fac", fac, 0, False))
 
+						  
+
                 ##### kWh today
                 kwhtoday = float(int(hexdata[150:154],16)) / 100
                 if DEBUG:
                     print('kwh today:', kwhtoday)
 
                 ##### kWh today base
-                kwhdbase = float(int(hexdata[154:158],16)) / 10
+                kwhdbase = float(int(hexdata[154:158],16)) / 100
                 if DEBUG:
                     print('kwh today base:', kwhdbase)
 
@@ -323,9 +324,14 @@ while True:
                 msgs.append((mqtt_topic + "kwhtotal", kwhtotal, 0, False))
 
                 ##### Unknown
-                unk = float(int(hexdata[174:178],16))
+                unk = float(int(hexdata[174:176],16))
                 if DEBUG:
                     print('Unknown:', unk)
+
+                ##### Operation mode
+                opmode = float(int(hexdata[176:178],16))
+                if DEBUG:
+                    print('Opmode:', opmode)
 
                 ##### Unknown
                 unk = float(int(hexdata[216:218],16))
@@ -362,10 +368,12 @@ while True:
                 if DEBUG:
                     print('Unknown:', unk)
 
-                ##### Unknown
-                unk = float(int(hexdata[232:234],16))
+                ##### Pac
+                pac = float(int(hexdata[232:234],16))
                 if DEBUG:
-                    print('Unknown:', unk)
+                    print('Pac:', pac)
+                msgs.append((mqtt_topic + "Pac", pac, 0, False))
+
 
                 ##### Unknown
                 unk = float(int(hexdata[234:236],16))
