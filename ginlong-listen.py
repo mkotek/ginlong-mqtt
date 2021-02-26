@@ -179,7 +179,7 @@ while True:
                 continue
 
             # Inverter payload from data logger
-            elif (len(hexdata) == 492):
+            elif (len(hexdata) == 476 or len(hexdata) == 492):
                 print('Got inverter payload message')
                 timestamp = (time.strftime("%F %H:%M"))     # get date time
                 msgs = []
