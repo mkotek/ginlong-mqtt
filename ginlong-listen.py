@@ -199,16 +199,6 @@ while True:
                 if DEBUG:
                     print('MQTT Topic:', mqtt_topic)
 
-                          
-                                                      
-                         
-                                        
-
-                               
-                                
-                     
-                               
-
                 ##### Unknown
                 unk = float(int(hexdata[94:96],16))
                 if DEBUG:
@@ -297,7 +287,6 @@ while True:
                 unk = float(int(hexdata[142:144],16))
                 if DEBUG:
                     print('Unknown:', unk)
-                         
 
                 ##### Pac
                 pac = float(int(hexdata[144:146],16))
@@ -406,7 +395,6 @@ while True:
                 unk = float(int(hexdata[206:210],16)) / 10
                 if DEBUG:
                     print('Unknown:', unk)
-                         
 
                 ##### Unknown
                 unk = float(int(hexdata[210:214],16)) / 10
