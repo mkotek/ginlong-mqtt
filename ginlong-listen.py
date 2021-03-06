@@ -199,32 +199,41 @@ while True:
                 if DEBUG:
                     print('MQTT Topic:', mqtt_topic)
 
-                ##### Base
-                base = float(int(hexdata[146:150],16))
-                if DEBUG:
-                    print('Base:', base)
+                          
+                                                      
+                         
+                                        
 
-                if base == 0.0:
-                    divider = 10
-                else:
-                    divider = 1
+                               
+                                
+                     
+                               
 
                 ##### Unknown
-                unk = float(int(hexdata[94:96],16)) / 10
+                unk = float(int(hexdata[94:96],16))
                 if DEBUG:
-                    print('Unknown 94-95:', unk)
+                    print('Unknown:', unk)
 
                 ##### Temperature
-                temp = float(int(hexdata[96:98],16)) / 10
+                temp = float(int(hexdata[96:98],16))
                 if DEBUG:
                     print('Temp:', temp)
+
+                ##### Temperature factor
+                tempf = float(int(hexdata[98:100],16))
+                if DEBUG:
+                    print('Temp factor:', tempf)
+
+                ##### Calculated temperature
+                temp = (temp - 256 + (256 * tempf)) / 10
+                if DEBUG:
+                    print('Calculated Temp:', temp)
                 msgs.append((mqtt_topic + "Temp", temp, 0, False))
 
-                ##### Ppv1 - FIXME
-                ppv1 = float(int(hexdata[98:102],16)) / divider
+                ##### Unknown
+                unk = float(int(hexdata[100:102],16))
                 if DEBUG:
-                    print('Ppv1:', ppv1)
-                msgs.append((mqtt_topic + "Ppv1", ppv1, 0, False))
+                    print('Unknown:', unk)
 
                 ##### Vpv1
                 vpv1 = float(int(hexdata[102:106],16)) / 10
@@ -238,11 +247,10 @@ while True:
                     print('Ipv1:', ipv1)
                 msgs.append((mqtt_topic + "Ipv1", ipv1, 0, False))
 
-                ##### Ppv2
-                ppv2 = float(int(hexdata[110:114],16)) / divider
+                ##### Unknown
+                unk = float(int(hexdata[110:114],16)) / 10
                 if DEBUG:
-                    print('Ppv2:', ppv2)
-                msgs.append((mqtt_topic + "Ppv2", ppv2, 0, False))
+                    print('Unknown:', unk)
 
                 ##### Vpv2
                 vpv2 = float(int(hexdata[114:118],16)) / 10
@@ -275,7 +283,7 @@ while True:
                 msgs.append((mqtt_topic + "Iac3", iac3, 0, False))
 
                 ##### Unknown
-                unk = float(int(hexdata[134:138],16))
+                unk = float(int(hexdata[134:138],16)) / 10
                 if DEBUG:
                     print('Unknown:', unk)
 
@@ -285,13 +293,27 @@ while True:
                     print('Vac:', vac)
                 msgs.append((mqtt_topic + "Vac", vac, 0, False))
 
-                ##### Fac
-                fac = float(int(hexdata[142:146],16)) / 100
+                ##### Unknown
+                unk = float(int(hexdata[142:144],16))
                 if DEBUG:
-                    print('Fac:', fac)
-                msgs.append((mqtt_topic + "Fac", fac, 0, False))
+                    print('Unknown:', unk)
+                         
 
-						  
+                ##### Pac
+                pac = float(int(hexdata[144:146],16))
+                if DEBUG:
+                    print('Pac:', pac)
+
+                ##### Pacbase
+                pacbase = float(int(hexdata[146:150],16))
+                if DEBUG:
+                    print('Pacbase:', pacbase)
+
+                ##### Calculated Pac
+                pac = pac + pacbase
+                if DEBUG:
+                    print('Calculated Pac:', pac)
+                msgs.append((mqtt_topic + "Pac", pac, 0, False))
 
                 ##### kWh today
                 kwhtoday = float(int(hexdata[150:154],16)) / 100
@@ -303,9 +325,10 @@ while True:
                 if DEBUG:
                     print('kwh today base:', kwhdbase)
 
+                ##### Calculated kWh today
                 kwhtoday = (kwhdbase + kwhtoday)
                 if DEBUG:
-                    print('kwh today sum:', kwhtoday)
+                    print('Calculated kwh today:', kwhtoday)
                 msgs.append((mqtt_topic + "kwhtoday", kwhtoday, 0, False))
 
                 ##### kWh total
@@ -318,10 +341,21 @@ while True:
                 if DEBUG:
                     print('kwh total base:', kwhabase)
 
+                ##### Calculated kwh total
                 kwhtotal = (kwhabase + kwhtotal)
                 if DEBUG:
-                    print('kwh total sum:', kwhtotal)
+                    print('Calculated kwh total:', kwhtotal)
                 msgs.append((mqtt_topic + "kwhtotal", kwhtotal, 0, False))
+
+                ##### Unknown
+                unk = float(int(hexdata[166:170],16))
+                if DEBUG:
+                    print('Unknown:', unk)
+
+                ##### Unknown
+                unk = float(int(hexdata[170:174],16))
+                if DEBUG:
+                    print('Unknown:', unk)
 
                 ##### Unknown
                 unk = float(int(hexdata[174:176],16))
@@ -334,51 +368,96 @@ while True:
                     print('Opmode:', opmode)
 
                 ##### Unknown
-                unk = float(int(hexdata[216:218],16))
+                unk = float(int(hexdata[178:182],16)) / 10
                 if DEBUG:
                     print('Unknown:', unk)
 
                 ##### Unknown
-                unk = float(int(hexdata[218:220],16))
+                unk = float(int(hexdata[182:186],16)) / 10
                 if DEBUG:
                     print('Unknown:', unk)
 
                 ##### Unknown
-                unk = float(int(hexdata[220:224],16))
+                unk = float(int(hexdata[186:190],16)) / 10
                 if DEBUG:
                     print('Unknown:', unk)
 
                 ##### Unknown
-                unk = float(int(hexdata[224:226],16))
+                unk = float(int(hexdata[190:194],16)) / 10
                 if DEBUG:
                     print('Unknown:', unk)
 
                 ##### Unknown
-                unk = float(int(hexdata[226:228],16))
+                unk = float(int(hexdata[194:198],16)) / 10
                 if DEBUG:
                     print('Unknown:', unk)
 
                 ##### Unknown
-                unk = float(int(hexdata[228:230],16))
+                unk = float(int(hexdata[198:202],16)) / 10
                 if DEBUG:
                     print('Unknown:', unk)
 
                 ##### Unknown
-                unk = float(int(hexdata[230:232],16))
+                unk = float(int(hexdata[202:206],16)) / 10
                 if DEBUG:
                     print('Unknown:', unk)
-
-                ##### Pac
-                pac = float(int(hexdata[232:234],16))
-                if DEBUG:
-                    print('Pac:', pac)
-                msgs.append((mqtt_topic + "Pac", pac, 0, False))
-
 
                 ##### Unknown
-                unk = float(int(hexdata[234:236],16))
+                unk = float(int(hexdata[206:210],16)) / 10
                 if DEBUG:
                     print('Unknown:', unk)
+                         
+
+                ##### Unknown
+                unk = float(int(hexdata[210:214],16)) / 10
+                if DEBUG:
+                    print('Unknown:', unk)
+
+                ##### Unknown
+                unk = float(int(hexdata[214:218],16))
+                if DEBUG:
+                    print('Unknown:', unk)
+
+                ##### Unknown base
+                unkbase = float(int(hexdata[218:222],16))
+                if DEBUG:
+                    print('Unknown base:', unkbase)
+
+                ##### Calculated unknown
+                unk = unkbase + unk
+                if DEBUG:
+                    print('Calculated unknown:', unk)
+
+                ##### Unknown
+                unk = float(int(hexdata[222:226],16)) / 10
+                if DEBUG:
+                    print('Unknown:', unk)
+
+                ##### Unknown
+                unk = float(int(hexdata[226:230],16)) / 10
+                if DEBUG:
+                    print('Unknown:', unk)
+
+                ##### Unknown
+                unk = float(int(hexdata[230:234],16)) / 10
+                if DEBUG:
+                    print('Unknown:', unk)
+
+                ##### Ppv
+                ppv = float(int(hexdata[232:234],16))
+                if DEBUG:
+                    print('Ppv:', ppv)
+
+                ##### Ppvbase
+                ppvbase = float(int(hexdata[234:236],16))
+                if DEBUG:
+                    print('Ppvbase:', ppvbase)
+
+                ##### Calculated Ppv
+                ppv = (ppvbase * 256) + ppv
+                if DEBUG:
+                    print('Calculated Ppv:', ppv) 
+                msgs.append((mqtt_topic + "Ppv1", ppv, 0, False))
 
                 ##### Inverter Model
                 inverter_model = str(swaphex(hexdata[316:320]), encoding)
@@ -389,7 +468,7 @@ while True:
                 firmware_version_main = str(swaphex(hexdata[320:324]), encoding)
                 if DEBUG:
                     print('Firmware version (main):', firmware_version_main)
-            
+
                 ##### Firmware version slave
                 firmware_version_slave = str(swaphex(hexdata[324:328]), encoding)
                 if DEBUG:
@@ -401,14 +480,14 @@ while True:
                     file = open("rawlog",'a')
                     file.write(timestamp + ' ' + hexdata + '\n')
                     file.close()
- 
+
                 # Send response
                 response = createV5Response(str(hexdata[14:22], encoding), '0101')
                 if DEBUG:
                     print('Response: %s' % response)
                 rawdata = binascii.unhexlify(response)
                 conn.sendall(rawdata)
- 
+
             else:
                 print('hexdata has invalid length')
 
